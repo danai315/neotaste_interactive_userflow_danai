@@ -1,0 +1,457 @@
+
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  .flow-root{padding:24px 16px 40px;}
+  .phase-label{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-text-tertiary);margin:28px 0 10px;}
+  .phase-label:first-child{margin-top:0;}
+  .row{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;}
+  .node{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:10px 14px;min-width:148px;max-width:200px;cursor:pointer;transition:border-color 0.15s,background 0.15s;position:relative;}
+  .node:hover{border-color:var(--color-border-primary);background:var(--color-background-secondary);}
+  .node.active{border-color:#2d6a4f;border-width:1.5px;}
+  .node.active .node-label{color:#2d6a4f;}
+  .node-tag{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;padding:2px 7px;border-radius:20px;display:inline-block;margin-bottom:6px;}
+  .tag-happy{background:#e8f4f0;color:#1a3d2b;}
+  .tag-edge{background:#faeeda;color:#633806;}
+  .tag-error{background:#fcebeb;color:#501313;}
+  .tag-gate{background:#eeedfe;color:#26215c;}
+  .tag-payoff{background:#1a3d2b;color:#e8f4f0;}
+  .tag-updated{background:#faeeda;color:#633806;outline:1.5px solid #EF9F27;}
+  .node-label{font-size:13px;font-weight:500;color:var(--color-text-primary);line-height:1.3;}
+  .node-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:3px;line-height:1.4;}
+  .connector{display:flex;align-items:center;padding-top:18px;color:var(--color-text-tertiary);font-size:16px;flex-shrink:0;}
+  .branch-group{display:flex;flex-direction:column;gap:8px;}
+  .detail-panel{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px 20px;margin-top:16px;font-size:13px;color:var(--color-text-secondary);line-height:1.6;display:none;}
+  .detail-panel.visible{display:block;}
+  .detail-panel strong{color:var(--color-text-primary);font-weight:500;}
+  .detail-panel ul{padding-left:16px;margin-top:8px;}
+  .detail-panel li{margin-bottom:4px;}
+  .detail-title{font-size:12px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:8px;}
+  .change-pill{display:inline-block;font-size:10px;font-weight:500;background:#faeeda;color:#633806;border:1px solid #EF9F27;border-radius:20px;padding:2px 8px;margin-bottom:8px;letter-spacing:0.06em;text-transform:uppercase;}
+  .divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:20px 0;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--color-text-secondary);}
+  .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .dot-happy{background:#2d6a4f;}
+  .dot-edge{background:#ba7517;}
+  .dot-error{background:#a32d2d;}
+  .dot-gate{background:#534ab7;}
+  .dot-payoff{background:#1a3d2b;}
+  .dot-updated{background:#EF9F27;}
+  .flow-arrow{width:100%;display:flex;justify-content:flex-start;padding:4px 0 4px 24px;color:var(--color-text-tertiary);font-size:18px;}
+</style>
+
+<div class="flow-root">
+  <h2 class="sr-only">Critic Mission complete user flow version 2 — updated notification copy, invitation flow direct to accept, confirmation copy revised</h2>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-happy"></div>Happy path</div>
+    <div class="legend-item"><div class="legend-dot dot-edge"></div>Edge case</div>
+    <div class="legend-item"><div class="legend-dot dot-error"></div>Error / failure</div>
+    <div class="legend-item"><div class="legend-dot dot-gate"></div>Subscription gate</div>
+    <div class="legend-item"><div class="legend-dot dot-payoff"></div>Payoff moment</div>
+    <div class="legend-item"><div class="legend-dot dot-updated"></div>Updated in v2</div>
+  </div>
+
+  <div class="phase-label">Phase 0 — Prerequisites</div>
+  <div class="row">
+    <div class="node" onclick="showDetail('p0-trigger')">
+      <span class="node-tag tag-happy">Trigger logic</span>
+      <div class="node-label">Mission conditions met</div>
+      <div class="node-sub">New restaurant + Foodie+ + 0 reviews + slot available</div>
+    </div>
+    <div class="connector">→</div>
+    <div class="branch-group">
+      <div class="node" onclick="showDetail('p0-slot')">
+        <span class="node-tag tag-happy">Slot model</span>
+        <div class="node-label">1 active slot per restaurant</div>
+        <div class="node-sub">Level priority. Others queued silently.</div>
+      </div>
+      <div class="node" onclick="showDetail('p0-queue')">
+        <span class="node-tag tag-edge">Queue fallback</span>
+        <div class="node-label">Slot expires after 48h</div>
+        <div class="node-sub">No booking = passes to next in queue</div>
+      </div>
+    </div>
+  </div>
+  <div id="p0-trigger" class="detail-panel">
+    <div class="detail-title">Trigger conditions — all must be true</div>
+    <ul>
+      <li>Restaurant added to NeoTaste in user's city within last 14 days</li>
+      <li>Restaurant has 0 completed structured reviews</li>
+      <li>User is Foodie level or above</li>
+      <li>User has not completed a mission in the last 7 days</li>
+      <li>No one currently holds the active slot for this restaurant</li>
+    </ul>
+  </div>
+  <div id="p0-slot" class="detail-panel">
+    <div class="detail-title">Slot assignment logic</div>
+    Priority order: NeoTaste Hero → Local → Cityguide → Foodie. If multiple users at the same level qualify, assign by proximity. Only 1 slot active at a time — selected user has 48h to book. Others remain queued with no notification until slot opens.
+  </div>
+  <div id="p0-queue" class="detail-panel">
+    <div class="detail-title">Queue fallback</div>
+    If the active user does not book within 48h, the slot expires silently. No failure message is sent. The next queued user receives a fresh notification. The 7-day review window still applies to the new invitee.
+  </div>
+
+  <div class="flow-arrow">↓</div>
+  <div class="phase-label">Phase 1 — Notification</div>
+  <div class="row">
+    <div class="node" onclick="showDetail('p1-notif')">
+      <span class="node-tag tag-updated">Updated</span>
+      <div class="node-label">Push notification lands</div>
+      <div class="node-sub">"Before anyone else." / "Your name came up first."</div>
+    </div>
+    <div class="connector">→</div>
+    <div class="branch-group">
+      <div class="node" onclick="showDetail('p1-repeat')">
+        <span class="node-tag tag-edge">Repeat user</span>
+        <div class="node-label">Returning mission recipient</div>
+        <div class="node-sub">Copy varies — acknowledges prior missions</div>
+      </div>
+      <div class="node" onclick="showDetail('p1-nopush')">
+        <span class="node-tag tag-error">Notifications off</span>
+        <div class="node-label">No push received</div>
+        <div class="node-sub">In-app banner on Discover as fallback</div>
+      </div>
+    </div>
+  </div>
+  <div id="p1-notif" class="detail-panel">
+    <div class="change-pill">Updated v2</div>
+    <div class="detail-title">Notification copy — final</div>
+    <strong>Title:</strong> "Before anyone else."<br>
+    <strong>Body:</strong> "A new restaurant just opened, and your name came up first."<br><br>
+    The title is the hook — declarative, exclusive, no explanation. The body delivers the personal signal: something happened, a decision was made, and she was the outcome. No mention of missions, tasks, or reviews. Curiosity drives the tap.
+  </div>
+  <div id="p1-repeat" class="detail-panel">
+    <div class="detail-title">Repeat mission user</div>
+    Vary copy to acknowledge prior missions — a more familiar, insider tone. "Another one for you." or reference her level: "As a Local, you're first to hear about this." Do not use identical copy each time — it starts to feel automated.
+  </div>
+  <div id="p1-nopush" class="detail-panel">
+    <div class="detail-title">Push notifications disabled — fallback</div>
+    <ul>
+      <li>On next app open, show a banner at top of Discover map: "A new restaurant in your area is waiting for its first review."</li>
+      <li>Banner persists until slot expires or is taken by another user</li>
+      <li>Tapping banner follows same deep-link flow as push notification</li>
+      <li>Do not prompt for notification permission here — wrong moment</li>
+    </ul>
+  </div>
+
+  <div class="flow-arrow">↓</div>
+  <div class="phase-label">Phase 2 — Deep link into app</div>
+  <div class="row">
+    <div class="node" onclick="showDetail('p2-load')">
+      <span class="node-tag tag-happy">Loading</span>
+      <div class="node-label">Map opens, pin resolves</div>
+      <div class="node-sub">Skeleton map → crowned amber pin highlighted</div>
+    </div>
+    <div class="connector">→</div>
+    <div class="branch-group">
+      <div class="node" onclick="showDetail('p2-noloc')">
+        <span class="node-tag tag-error">Location off</span>
+        <div class="node-label">Can't center on user</div>
+        <div class="node-sub">Auto-centers on restaurant coordinates instead</div>
+      </div>
+      <div class="node" onclick="showDetail('p2-wrongcity')">
+        <span class="node-tag tag-edge">User is travelling</span>
+        <div class="node-label">User not in mission city</div>
+        <div class="node-sub">Map auto-navigates to mission restaurant regardless</div>
+      </div>
+    </div>
+  </div>
+  <div id="p2-load" class="detail-panel">
+    <div class="detail-title">Map loading state</div>
+    Show skeleton map immediately on deep-link open — no blank screen with spinner. Mission pin appears once location resolves: crowned N pin in amber/gold, subtle pulse animation on first appearance, then settles. All other N pins are quieter (reduced opacity, smaller) to let mission pin command attention. Map auto-centers on the mission pin.
+  </div>
+  <div id="p2-noloc" class="detail-panel">
+    <div class="detail-title">Location services off</div>
+    App knows where the restaurant is. Auto-center on restaurant coordinates regardless of user's location. Do not ask for location permission at this moment — user came here from a notification and wants to see the restaurant, not a permission dialog.
+  </div>
+  <div id="p2-wrongcity" class="detail-panel">
+    <div class="detail-title">User is away from their home city</div>
+    Map auto-navigates to mission restaurant's location regardless of where user physically is. A small chip can acknowledge: "Mission in Berlin · tap to navigate there." The 48h booking window starts from notification, not from opening the map.
+  </div>
+
+  <div class="flow-arrow">↓</div>
+  <div class="phase-label">Phase 3 — Map state (mission active)</div>
+  <div class="row">
+    <div class="node" onclick="showDetail('p3-pin')">
+      <span class="node-tag tag-happy">Mission pin</span>
+      <div class="node-label">Crowned pin, amber/gold</div>
+      <div class="node-sub">Subtle pulse on first view, then settles</div>
+    </div>
+    <div class="connector">→</div>
+    <div class="node" onclick="showDetail('p3-tap')">
+      <span class="node-tag tag-happy">Tap pin</span>
+      <div class="node-label">Restaurant card opens</div>
+      <div class="node-sub">Mission banner at top of card</div>
+    </div>
+    <div class="connector">→</div>
+    <div class="node" onclick="showDetail('p3-stolen')">
+      <span class="node-tag tag-edge">Slot taken</span>
+      <div class="node-label">Another user claimed it</div>
+      <div class="node-sub">Pin reverts, quiet in-app note</div>
+    </div>
+  </div>
+  <div id="p3-pin" class="detail-panel">
+    <div class="detail-title">Mission pin visual treatment</div>
+    Crowned N in amber/gold — distinct from standard dark green N pins. Pulses once on first appearance via deep link, then settles. Does not pulse continuously. Other pins on map are visually quieter when a mission pin is in viewport.
+  </div>
+  <div id="p3-tap" class="detail-panel">
+    <div class="detail-title">What the card shows</div>
+    Restaurant card opens as bottom sheet. Mission banner sits above the restaurant name — first thing she reads. The restaurant may have sparse content (new to platform) — empty state frames this as opportunity, not absence.
+  </div>
+  <div id="p3-stolen" class="detail-panel">
+    <div class="detail-title">Race condition — slot claimed by another user</div>
+    Mission pin reverts to standard Hidden gem pin. Quiet in-app notification (not a push): "Someone else got there first this time. Watch for your next invitation." No apology, no drama. She can still visit and leave a standard review.
+  </div>
+
+  <div class="flow-arrow">↓</div>
+  <div class="phase-label">Phase 4 — The invitation screen</div>
+  <div class="row">
+    <div class="node" onclick="showDetail('p4-invite')">
+      <span class="node-tag tag-updated">Updated</span>
+      <div class="node-label">"This one's empty."</div>
+      <div class="node-sub">No reward reveal. Direct to accept. Mystery does the work.</div>
+    </div>
+    <div class="connector">→</div>
+    <div class="branch-group">
+      <div class="node" onclick="showDetail('p4-sub')">
+        <span class="node-tag tag-happy">Subscriber</span>
+        <div class="node-label">"Open the door →"</div>
+        <div class="node-sub">Secondary: "Not yet"</div>
+      </div>
+      <div class="node" onclick="showDetail('p4-nonsub')">
+        <span class="node-tag tag-gate">Non-subscriber</span>
+        <div class="node-label">"Unlock this mission"</div>
+        <div class="node-sub">Secondary: "I'm not a member"</div>
+      </div>
+      <div class="node" onclick="showDetail('p4-empty')">
+        <span class="node-tag tag-edge">Sparse card</span>
+        <div class="node-label">New restaurant, no content</div>
+        <div class="node-sub">Empty state = opportunity, not absence</div>
+      </div>
+    </div>
+  </div>
+  <div id="p4-invite" class="detail-panel">
+    <div class="change-pill">Updated v2</div>
+    <div class="detail-title">Invitation screen — final copy</div>
+    <strong>Badge:</strong> Critic mission<br>
+    <strong>Headline:</strong> "This one's empty."<br>
+    <strong>Body:</strong> "A new restaurant just opened in your city. No photos. No reviews. No reputation yet. We're giving you the first look. If you go, your name becomes the first thing people see — and it stays there."<br>
+    <strong>Aside:</strong> "We only invite people whose taste we trust. No one else in your city has seen this yet."<br><br>
+    The three-reward tap-through has been removed entirely. Mystery and identity pull harder than mechanics explanation. Add the reward detail back only if data shows users are bouncing at the accept point.
+  </div>
+  <div id="p4-sub" class="detail-panel">
+    <div class="detail-title">Subscriber CTA states</div>
+    Primary: "Open the door →" — ceremonial, not transactional.<br>
+    Secondary: "Not yet" — keeps the door warm, not a hard dismiss. She may return within the 48h window.
+  </div>
+  <div id="p4-nonsub" class="detail-panel">
+    <div class="detail-title">Non-subscriber gate — mission-specific</div>
+    Same headline and body — card is fully visible. The CTA changes:<br>
+    Primary: "Unlock this mission" — specific to what she's about to lose, not a generic subscribe prompt.<br>
+    Secondary: "I'm not a member" — makes the gate legible without being punitive.<br>
+    Small line: "Members only · join to go first"
+  </div>
+  <div id="p4-empty" class="detail-panel">
+    <div class="detail-title">Sparse card — new restaurant with no content</div>
+    Do not show an empty reviews section. Reframe: "No one's been here yet on NeoTaste. You'll be the first to tell people what it's like." Photos: if none exist, show a high-quality placeholder with restaurant name and cuisine. The emptiness is the pitch — a blank canvas, not a neglected listing.
+  </div>
+
+  <div class="flow-arrow">↓</div>
+  <div class="phase-label">Phase 5 — Accept screen</div>
+  <div class="row">
+    <div class="node" onclick="showDetail('p5-accept')">
+      <span class="node-tag tag-happy">Accept screen</span>
+      <div class="node-label">"Ready to go first?"</div>
+      <div class="node-sub">Map preview of pin + time pill</div>
+    </div>
+    <div class="connector">→</div>
+    <div class="branch-group">
+      <div class="node" onclick="showDetail('p5-book')">
+        <span class="node-tag tag-happy">Books</span>
+        <div class="node-label">"Accept mission — book now"</div>
+        <div class="node-sub">Mission context tagged to booking in backend</div>
+      </div>
+      <div class="node" onclick="showDetail('p5-later')">
+        <span class="node-tag tag-edge">Defers</span>
+        <div class="node-label">"Maybe later"</div>
+        <div class="node-sub">Returns to map. 48h window still active.</div>
+      </div>
+      <div class="node" onclick="showDetail('p5-nodeal')">
+        <span class="node-tag tag-error">No deal available</span>
+        <div class="node-label">Restaurant has no active deal</div>
+        <div class="node-sub">Save CTA shown instead of Book</div>
+      </div>
+    </div>
+  </div>
+  <div id="p5-accept" class="detail-panel">
+    <div class="detail-title">Accept screen — copy and components</div>
+    <strong>Eyebrow:</strong> "Accept your mission"<br>
+    <strong>Headline:</strong> "Ready to go first?"<br>
+    <strong>Body:</strong> "Book the deal, visit the restaurant, leave your review. Your name goes on the map the moment you do."<br>
+    <strong>Time pill:</strong> "This invitation is open for a limited time" — no specific number, no countdown.<br>
+    A map preview showing the amber crowned pin gives the payoff she's working toward visual form before she commits.
+  </div>
+  <div id="p5-book" class="detail-panel">
+    <div class="detail-title">Booking flow — mission context</div>
+    Booking flow is identical to standard. Backend tags this booking as a mission booking — this tag triggers the mission version of the post-redemption review screen (Phase 7), not the standard one. No added friction visible to user during booking.
+  </div>
+  <div id="p5-later" class="detail-panel">
+    <div class="detail-title">User taps "Maybe later"</div>
+    Returns to map. Mission slot is still active — she has until the 48h window from notification expires. The mission pin remains visible on the map. No penalty, no pressure message. If she returns and the slot has been taken by another user, she sees the standard race condition message.
+  </div>
+  <div id="p5-nodeal" class="detail-panel">
+    <div class="detail-title">No active deal — fallback CTA</div>
+    Replace "Accept mission — book now" with "Save this place — be ready when the deal drops." Open design decision: should users be able to complete a mission without a NeoTaste booking, or is booking a required step? This determines whether the flow is fully closed or has a loose end in markets where deals aren't configured yet for new restaurants.
+  </div>
+
+  <div class="flow-arrow">↓</div>
+  <div class="phase-label">Phase 6 — Booking confirmation</div>
+  <div class="row">
+    <div class="node" onclick="showDetail('p6-confirm')">
+      <span class="node-tag tag-updated">Updated</span>
+      <div class="node-label">"It's yours now."</div>
+      <div class="node-sub">Calm, possessive, no more selling</div>
+    </div>
+    <div class="connector">→</div>
+    <div class="branch-group">
+      <div class="node" onclick="showDetail('p6-restaurant')">
+        <span class="node-tag tag-happy">See the restaurant</span>
+        <div class="node-label">Lands on restaurant card</div>
+        <div class="node-sub">Amber banner: "First impression pending — yours to claim"</div>
+      </div>
+      <div class="node" onclick="showDetail('p6-reminder')">
+        <span class="node-tag tag-edge">Day-of reminder</span>
+        <div class="node-label">"Tonight's the night."</div>
+        <div class="node-sub">Resurfaces mission context before visit</div>
+      </div>
+    </div>
+  </div>
+  <div id="p6-confirm" class="detail-panel">
+    <div class="change-pill">Updated v2</div>
+    <div class="detail-title">Confirmation screen — final copy</div>
+    <strong>Headline:</strong> "It's yours now."<br>
+    <strong>Body:</strong> "Your name is reserved for this spot. No one else can take the first impression. Go when you're ready — visit, eat, leave your review. We'll handle the rest."<br>
+    <strong>Small line:</strong> "We'll remind you on the day. Your spot is held — don't let it go to someone else."<br>
+    <strong>Primary CTA:</strong> "See the restaurant →"<br>
+    <strong>Secondary CTA:</strong> "Not right now"<br><br>
+    Deliberately calm — no more selling. The possessive framing ("It's yours") does the work. The urgency in "don't let it go to someone else" reintroduces stakes without a countdown.
+  </div>
+  <div id="p6-restaurant" class="detail-panel">
+    <div class="detail-title">Restaurant card — mission indicator persists</div>
+    The card must not look identical to what any other user sees. A persistent amber banner at the top: "First impression pending — yours to claim." Subtle enough not to dominate, present enough that the illusion of being chosen survives the transition from confirmation to the standard booking flow.
+  </div>
+  <div id="p6-reminder" class="detail-panel">
+    <div class="detail-title">Day-of reminder push</div>
+    <strong>Title:</strong> "Tonight's the night."<br>
+    <strong>Body:</strong> "Your critic mission is waiting. Be the first."<br><br>
+    Optional — respects notification preferences. Bridges the gap between booking and the post-redemption review, keeping the identity framing alive across the time gap.
+  </div>
+
+  <div class="flow-arrow">↓</div>
+  <div class="phase-label">Phase 7 — Post-redemption review (mission version)</div>
+  <div class="row">
+    <div class="node" onclick="showDetail('p7-screen')">
+      <span class="node-tag tag-happy">Mission review screen</span>
+      <div class="node-label">"You're the first. Make it count."</div>
+      <div class="node-sub">Elevated header, same 3-prompt structure</div>
+    </div>
+    <div class="connector">→</div>
+    <div class="branch-group">
+      <div class="node" onclick="showDetail('p7-prompts')">
+        <span class="node-tag tag-happy">Three prompts</span>
+        <div class="node-label">Occasion → Vibes → Come back?</div>
+        <div class="node-sub">All 3 required for first-mover credit</div>
+      </div>
+      <div class="node" onclick="showDetail('p7-skip')">
+        <span class="node-tag tag-edge">Skips</span>
+        <div class="node-label">Taps "Later"</div>
+        <div class="node-sub">Credit held 7 days, one gentle re-prompt</div>
+      </div>
+    </div>
+  </div>
+  <div id="p7-screen" class="detail-panel">
+    <div class="detail-title">Mission review — what's different from standard</div>
+    <ul>
+      <li><strong>Header:</strong> "You're the first. Make it count." — not "Glad you liked it!"</li>
+      <li>Stars and photo upload remain in same position</li>
+      <li>Three structured prompts sit between stars and optional text field</li>
+      <li>Level progress bar more prominent — this review carries more weight</li>
+      <li>"Later" button still present — never remove the escape route</li>
+    </ul>
+  </div>
+  <div id="p7-prompts" class="detail-panel">
+    <div class="detail-title">The three prompts</div>
+    <strong>Prompt 1 — Occasion:</strong> Solo lunch / Date night / Group dinner / Quick bite<br><br>
+    <strong>Prompt 2 — Vibes:</strong> Cosy and quiet / Social and fun / Cool discovery / Chill / Great for dates / Local favourite<br><br>
+    <strong>Prompt 3 — Would you come back?</strong> Yes, without a doubt / Yes, if the deal is on / Probably not / No<br><br>
+    All three must be answered for first-mover credit. Partial responses generate data but do not qualify for the payoff.
+  </div>
+  <div id="p7-skip" class="detail-panel">
+    <div class="detail-title">User taps Later — grace period</div>
+    Mission credit held for 7 days from redemption date. One gentle in-app re-prompt on next app open: "You still have first-reviewer status at [Restaurant]. Leave your pick before it's gone." After 7 days, credit expires. No new mission issued for this restaurant — first review credit goes unclaimed.
+  </div>
+
+  <div class="flow-arrow">↓</div>
+  <div class="phase-label">Phase 8 — Payoff</div>
+  <div class="row">
+    <div class="node" onclick="showDetail('p8-toast')">
+      <span class="node-tag tag-payoff">Payoff moment</span>
+      <div class="node-label">Champagne toast animation</div>
+      <div class="node-sub">"You're officially part of NeoTaste history"</div>
+    </div>
+    <div class="connector">→</div>
+    <div class="branch-group">
+      <div class="node" onclick="showDetail('p8-pin')">
+        <span class="node-tag tag-payoff">Map returns</span>
+        <div class="node-label">Avatar appears on pin</div>
+        <div class="node-sub">First name + avatar visible to all future visitors</div>
+      </div>
+      <div class="node" onclick="showDetail('p8-next')">
+        <span class="node-tag tag-happy">Second session</span>
+        <div class="node-label">What she sees next time</div>
+        <div class="node-sub">Avatar on pin, level progress, 7-day cool-down</div>
+      </div>
+    </div>
+  </div>
+  <div id="p8-toast" class="detail-panel">
+    <div class="detail-title">Payoff animation</div>
+    Two champagne glasses clink — fires immediately on review submission, before map transition. Duration ~1.5s. Below animation: "You're officially part of NeoTaste history." Second line: "First reviewer at [Restaurant Name]." Restrained, not confetti-cannon. Transitions to map centered on restaurant with her avatar now on the pin.
+  </div>
+  <div id="p8-pin" class="detail-panel">
+    <div class="detail-title">First-mover credit — what strangers see</div>
+    On the restaurant detail page: "First taste by [Name]" section showing first name, avatar initials/colour, level badge, and optional one-sentence critic's pick. Permanent. Sits above all other reviews. Privacy: first name only by default. No surname, no full profile link, no location data.
+  </div>
+  <div id="p8-next" class="detail-panel">
+    <div class="detail-title">Second session — building the pull habit</div>
+    <ul>
+      <li>Her avatar visible on restaurant pin when she browses Discover</li>
+      <li>Level progress update surfaced on Profile if mission pushed her toward next level</li>
+      <li>No immediate new mission — 7-day cool-down applies</li>
+      <li>After 7 days she re-enters the mission queue</li>
+      <li>No "missions completed" counter shown publicly — avoids the Beli streak problem</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+  var activePanel=null,activeNode=null;
+  function showDetail(id){
+    var panel=document.getElementById(id);
+    if(!panel)return;
+    if(activePanel===panel){
+      panel.classList.remove('visible');
+      if(activeNode)activeNode.classList.remove('active');
+      activePanel=null;activeNode=null;return;
+    }
+    if(activePanel)activePanel.classList.remove('visible');
+    if(activeNode)activeNode.classList.remove('active');
+    panel.classList.add('visible');
+    activePanel=panel;
+    var clicked=event.currentTarget;
+    clicked.classList.add('active');
+    activeNode=clicked;
+    setTimeout(function(){panel.scrollIntoView({behavior:'smooth',block:'nearest'});},50);
+  }
+</script>
