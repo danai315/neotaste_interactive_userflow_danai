@@ -572,14 +572,29 @@ hr.divider {
     <div class="node" onclick="showDetail('p7-screen')">
       <span class="node-tag tag-happy">Mission review screen</span>
       <div class="node-label">"You're the first. Make it count."</div>
-      <div class="node-sub">Elevated header, same 3-prompt structure</div>
+      <div class="node-sub">Elevated header, full review sequence</div>
     </div>
     <div class="connector">→</div>
     <div class="branch-group">
+      <div class="node" onclick="showDetail('p7-sequence')">
+        <span class="node-tag tag-happy">Full sequence</span>
+        <div class="node-label">Stars → Photos → Prompts → Critic's pick → Profile</div>
+        <div class="node-sub">Required and optional fields clearly separated</div>
+      </div>
       <div class="node" onclick="showDetail('p7-prompts')">
-        <span class="node-tag tag-happy">Three prompts</span>
+        <span class="node-tag tag-happy">Three structured prompts</span>
         <div class="node-label">Occasion → Vibes → Come back?</div>
         <div class="node-sub">All 3 required for first-mover credit</div>
+      </div>
+      <div class="node" onclick="showDetail('p7-critics-pick')">
+        <span class="node-tag tag-edge">Critic's pick</span>
+        <div class="node-label">One-sentence review — optional</div>
+        <div class="node-sub">Appears on restaurant page under her name if completed</div>
+      </div>
+      <div class="node" onclick="showDetail('p7-profile')">
+        <span class="node-tag tag-edge">Profile confirm</span>
+        <div class="node-label">Name + avatar preview</div>
+        <div class="node-sub">Shows how she'll appear as first reviewer</div>
       </div>
       <div class="node" onclick="showDetail('p7-skip')">
         <span class="node-tag tag-edge">Skips</span>
@@ -592,18 +607,43 @@ hr.divider {
     <div class="detail-title">Mission review — what's different from standard</div>
     <ul>
       <li><strong>Header:</strong> "You're the first. Make it count." — not "Glad you liked it!"</li>
-      <li>Stars and photo upload remain in same position</li>
-      <li>Three structured prompts sit between stars and optional text field</li>
-      <li>Level progress bar more prominent — this review carries more weight</li>
+      <li>Star rating sits at the top — existing NeoTaste behaviour, unchanged</li>
+      <li>Photo upload follows — optional, existing behaviour, unchanged</li>
+      <li>Three structured prompts follow — required for first-mover credit</li>
+      <li>Critic's pick text field follows — optional, one sentence, new</li>
+      <li>Profile name and avatar preview closes the screen — new</li>
+      <li>Level progress bar more prominent — this review carries more weight toward levelling up</li>
       <li>"Later" button still present — never remove the escape route</li>
     </ul>
   </div>
+  <div id="p7-sequence" class="detail-panel">
+    <div class="detail-title">Full screen sequence — field by field</div>
+    <strong>1. Star rating</strong> — existing. Required. Unchanged from standard review.<br><br>
+    <strong>2. Photo upload</strong> — existing. Optional. Unchanged from standard review.<br><br>
+    <strong>3. Occasion prompt</strong> — new. Required for first-mover credit. Solo lunch / Date night / Group dinner / Quick bite.<br><br>
+    <strong>4. Vibes prompt</strong> — new. Required for first-mover credit. Cosy and quiet / Social and fun / Cool discovery / Chill / Great for dates / Local favourite.<br><br>
+    <strong>5. Come back? prompt</strong> — new. Required for first-mover credit. Yes, without a doubt / Yes, if the deal is on / Probably not / No.<br><br>
+    <strong>6. Critic's pick</strong> — new. Optional. One sentence, character-limited. Placeholder: "What's the one thing people need to know?" If completed, this line appears permanently on the restaurant page under her name.<br><br>
+    <strong>7. Profile preview</strong> — new. Shows her first name and avatar as they'll appear on the restaurant page. If profile is incomplete, a nudge to fill it in. If complete, a confirmation: "This is how you'll appear as the first reviewer."
+  </div>
   <div id="p7-prompts" class="detail-panel">
-    <div class="detail-title">The three prompts</div>
+    <div class="detail-title">The three structured prompts</div>
     <strong>Prompt 1 — Occasion:</strong> Solo lunch / Date night / Group dinner / Quick bite<br><br>
     <strong>Prompt 2 — Vibes:</strong> Cosy and quiet / Social and fun / Cool discovery / Chill / Great for dates / Local favourite<br><br>
     <strong>Prompt 3 — Would you come back?</strong> Yes, without a doubt / Yes, if the deal is on / Probably not / No<br><br>
-    All three must be answered for first-mover credit. Partial responses generate data but do not qualify for the payoff.
+    All three must be answered for first-mover credit. Stars + photos alone, or partial prompt completion, generate data but do not qualify for the payoff.
+  </div>
+  <div id="p7-critics-pick" class="detail-panel">
+    <div class="detail-title">Critic's pick — the optional one-sentence review</div>
+    A single text field, character-limited (100 chars max). Placeholder copy: "What's the one thing people need to know?" — frames it as a pick, not a review obligation.<br><br>
+    If she completes it: the sentence appears permanently on the restaurant detail page directly under her first name and avatar in the "First taste by" section.<br><br>
+    If she skips it: the first-mover credit still applies. Her name and avatar appear on the restaurant page with no quote. The quote slot is simply absent — no empty placeholder shown to other users.
+  </div>
+  <div id="p7-profile" class="detail-panel">
+    <div class="detail-title">Profile name and avatar preview</div>
+    Not a separate settings screen — a read-only preview at the bottom of the review screen showing exactly how she'll appear as the first reviewer.<br><br>
+    <strong>If profile is complete:</strong> Shows her first name, avatar colour/initials, and level badge. Copy: "This is how you'll appear on this restaurant's page."<br><br>
+    <strong>If profile is incomplete</strong> (no avatar set, display name missing): Shows a placeholder with a nudge — "Add a photo to your profile to complete your reviewer identity." Links to profile settings. She can skip this and still submit — the nudge is not a blocker.
   </div>
   <div id="p7-skip" class="detail-panel">
     <div class="detail-title">User taps Later — grace period</div>
